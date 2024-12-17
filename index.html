@@ -1,81 +1,359 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>集塵機 - 計算工具</title>
+    <title>集塵系統計算工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .calculator {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .input-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 150px;
+        }
+        .input-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .input-group input {
+            padding: 6px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 180px;
+        }
+        .full-width {
+            width: 100%;
+        }
+        button {
+            width: 150px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 auto;
+            display: block;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 20px auto;
+        }
+        .result-section h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .result {
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        .result-item {
+            margin-bottom: 8px;
+        }
+        .formulas {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.9em;
+        }
+        .formulas h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .formulas pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        @media (max-width: 768px) {
+            .input-row {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+            .input-group input {
+                max-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>氧化碴D倉集塵機 - 計算工具</h1>
-    <form id="calcForm">
-        <label for="outerDiameter">風管外徑 (mm):</label>
-        <input type="number" id="outerDiameter" required><br>
 
-        <label for="wallThickness">風管壁厚 (mm):</label>
-        <input type="number" id="wallThickness" required><br>
+    <h1>集塵系統計算工具</h1>
+    <div class="calculator">
+        <div class="section">
+            <h2>1. 集塵室尺寸</h2>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="length">長度 (米):</label>
+                    <input type="number" id="length" placeholder="例如: 56" />
+                </div>
+                <div class="input-group">
+                    <label for="width">寬度 (米):</label>
+                    <input type="number" id="width" placeholder="例如: 31" />
+                </div>
+            </div>
+            <div class="input-group full-width">
+                <label for="height">高度 (米):</label>
+                <input type="number" id="height" placeholder="例如: 18" />
+            </div>
+        </div>
 
-        <label for="length">長 (M):</label>
-        <input type="number" id="length" required><br>
+        <div class="section">
+            <h2>2. 換氣需求</h2>
+            <div class="input-group full-width">
+                <label for="airChanges">每小時換氣次數:</label>
+                <input type="number" id="airChanges" placeholder="預設: 3" value="3" />
+            </div>
+        </div>
 
-        <label for="width">寬 (M):</label>
-        <input type="number" id="width" required><br>
+        <div class="section">
+            <h2>3. 風管設計</h2>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="ductDiameter">風管外徑 (mm):</label>
+                    <input type="number" id="ductDiameter" placeholder="例如: 1255" />
+                </div>
+                <div class="input-group">
+                    <label for="wallThickness">風管壁厚 (mm):</label>
+                    <input type="number" id="wallThickness" placeholder="例如: 6" />
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="ductLength">直管長度 (米):</label>
+                    <input type="number" id="ductLength" placeholder="例如: 42" />
+                </div>
+                <div class="input-group">
+                    <label for="numberOfBends">彎管數量:</label>
+                    <input type="number" id="numberOfBends" placeholder="例如: 6" />
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="bendLoss">每個彎管壓力損失 (mmAq):</label>
+                    <input type="number" id="bendLoss" placeholder="例如: 9.7" />
+                </div>
+                <div class="input-group">
+                    <label for="elbowLoss">彎型管壓力損失 (mmAq):</label>
+                    <input type="number" id="elbowLoss" placeholder="例如: 0.7" />
+                </div>
+            </div>
+        </div>
 
-        <label for="height">高 (M):</label>
-        <input type="number" id="height" required><br>
+        <div class="section">
+            <h2>4. 濾布壓降</h2>
+            <div class="input-group full-width">
+                <label for="filterLoss">濾布壓降 (mmAq):</label>
+                <input type="number" id="filterLoss" placeholder="例如: 200" />
+            </div>
+        </div>
 
-        <label for="airChanges">每小時換氣次數:</label>
-        <input type="number" id="airChanges" required><br>
+        <div class="section">
+            <h2>5. 過濾風速</h2>
+            <div class="input-group full-width">
+                <label for="filterVelocity">過濾風速 (m/s):</label>
+                <input type="number" id="filterVelocity" placeholder="例如: 1.5" />
+            </div>
+        </div>
 
-        <button type="button" onclick="calculateResults()">計算</button>
-    </form>
+        <div class="section">
+            <h2>6. 馬達效率</h2>
+            <div class="input-group full-width">
+                <label for="motorEfficiency">馬達效率 (%):</label>
+                <input type="number" id="motorEfficiency" placeholder="例如: 60" value="60" />
+            </div>
+        </div>
+    </div>
 
-    <h2>計算結果:</h2>
-    <div id="results"></div>
+    <div class="form-container">
+        <button onclick="calculate()">計算</button>
+    </div>
+
+    <div class="result-section">
+        <h2>計算結果</h2>
+        <div class="result" id="results">
+            <!-- 結果顯示區域 -->
+        </div>
+    </div>
+
+    <div class="formulas">
+        <h2>計算公式</h2>
+        <pre>
+1. 集塵室體積:
+   Volume = Length × Width × Height
+
+2. 風量 (CMM):
+   Airflow = (Volume × Air Changes) / 60
+
+3. 管道截面積:
+   Inner Diameter = Outer Diameter - 2 × Wall Thickness
+   Duct Area = π × (Inner Diameter / 2000)²
+
+4. 風速 (V):
+   V = Airflow (m³/min) / Duct Area (m²) / 60
+   V = m/s
+
+5. 風壓 (Pv):
+   Pv = (rho × V²) / (2 × g)
+
+6. 總風壓:
+   Total Pv = Pv + (Duct Length × 0.08) + (Number of Bends × Bend Loss) + Elbow Loss + Filter Loss
+
+7. 過濾面積:
+   Filter Area = Airflow (CMM) / Filter Velocity (m/s)
+
+8. 所需馬力 (HP):
+   HP = (Total Pv × Airflow) / (6120 × 0.746 × Motor Efficiency)
+        </pre>
+    </div>
 
     <script>
-        function calculateResults() {
-            // 輸入數據
-            const outerDiameter = parseFloat(document.getElementById('outerDiameter').value); // mm
-            const wallThickness = parseFloat(document.getElementById('wallThickness').value); // mm
-            const length = parseFloat(document.getElementById('length').value); // M
-            const width = parseFloat(document.getElementById('width').value); // M
-            const height = parseFloat(document.getElementById('height').value); // M
+        function calculate() {
+            // 取得輸入值
+            const length = parseFloat(document.getElementById('length').value);
+            const width = parseFloat(document.getElementById('width').value);
+            const height = parseFloat(document.getElementById('height').value);
             const airChanges = parseFloat(document.getElementById('airChanges').value);
+            const ductDiameter = parseFloat(document.getElementById('ductDiameter').value);
+            const wallThickness = parseFloat(document.getElementById('wallThickness').value);
+            const ductLength = parseFloat(document.getElementById('ductLength').value);
+            const numberOfBends = parseFloat(document.getElementById('numberOfBends').value);
+            const bendLoss = parseFloat(document.getElementById('bendLoss').value);
+            const elbowLoss = parseFloat(document.getElementById('elbowLoss').value);
+            const filterLoss = parseFloat(document.getElementById('filterLoss').value);
+            const filterVelocity = parseFloat(document.getElementById('filterVelocity').value);
+            const motorEfficiency = parseFloat(document.getElementById('motorEfficiency').value) / 100;
 
-            // 單位轉換：將 mm 轉換為 m
-            const outerDiameterM = outerDiameter / 1000;
-            const wallThicknessM = wallThickness / 1000;
+            // 驗證輸入值
+            if (isNaN(length) || isNaN(width) || isNaN(height) || isNaN(airChanges) ||
+                isNaN(ductDiameter) || isNaN(wallThickness) || isNaN(ductLength) ||
+                isNaN(numberOfBends) || isNaN(bendLoss) || isNaN(elbowLoss) ||
+                isNaN(filterLoss) || isNaN(filterVelocity) || isNaN(motorEfficiency)) {
+                alert("請確保所有輸入欄位均已填寫並且為數字。");
+                return;
+            }
 
-            // 計算風管內徑
-            const innerDiameter = outerDiameterM - 2 * wallThicknessM;
+            // 1. 計算集塵室體積
+            const volume = length * width * height;
 
-            // 計算風管截面積 (A)
-            const pipeArea = Math.PI * Math.pow(innerDiameter / 2, 2);
+            // 2. 風量: 每小時換氣次數採用1的體積
+            const airflow = (volume * airChanges) / 60; // m³/min (CMM)
 
-            // 計算立方體體積
-            const volume = length * width * height; // 集塵立方 (m^3)
+            // 3. 計算管道截面積與風速
+            // 計算內徑 = 外徑 - 2 * 壁厚
+            const innerDiameter = ductDiameter - (2 * wallThickness); // mm
+            if (innerDiameter <= 0) {
+                alert("風管壁厚過厚，導致內徑為負數或零，請檢查輸入值。");
+                return;
+            }
+            const innerDiameterMeters = innerDiameter / 1000; // 轉換為米
+            const ductRadius = innerDiameterMeters / 2; // 米
+            const ductArea = Math.PI * Math.pow(ductRadius, 2); // m²
 
-            // 計算風量 (CMM)
-            const airVolume = (volume * airChanges) / 60; // 風量 CMM
+            // 風量已經是 m³/min，轉換為 m³/s
+            const airflow_m3s = airflow / 60; // m³/s
 
-            // 計算管道風速 (V)
-            const windSpeed = (airVolume / pipeArea); // m/s
+            // 風速 = 風量 (m³/s) / 截面積 (m²) = m/s
+            const windSpeed_mps = airflow_m3s / ductArea; // m/s
 
-            // 計算風壓 (P_v)
-            const airDensity = 1.2; // 空氣密度 kg/m^3
-            const gravity = 9.81; // 重力加速度 m/s^2
-            const windPressure = (airDensity * Math.pow(windSpeed, 2)) / (2 * gravity); // mmAq
+            // 4. 計算風壓 (Pv) = (rho * V^2) / (2 * g) 轉換為 mmAq
+            const rho = 1.2; // kg/m³
+            const g = 9.81; // m/s²
+            const windPressure_mmAq = (rho * Math.pow(windSpeed_mps, 2)) / (2 * g); // mmAq
 
-            // 顯示結果
-            document.getElementById('results').innerHTML = `
-                <p><strong>風管內徑:</strong> ${innerDiameter.toFixed(3)} m</p>
-                <p><strong>風管截面積:</strong> ${pipeArea.toFixed(3)} m<sup>2</sup></p>
-                <p><strong>集塵立方體積:</strong> ${volume.toFixed(2)} m<sup>3</sup></p>
-                <p><strong>風量 (CMM):</strong> ${airVolume.toFixed(2)} CMM</p>
-                <p><strong>管道風速:</strong> ${windSpeed.toFixed(2)} m/s</p>
-                <p><strong>風壓:</strong> ${windPressure.toFixed(2)} mmAq</p>
+            // 5. 計算管道長度損失: 0.08 mmAq/m
+            const ductLengthLoss = ductLength * 0.08;
+
+            // 6. 彎管損失
+            const totalBendLoss = numberOfBends * bendLoss;
+
+            // 7. 彎型管壓力損失
+            const totalElbowLoss = elbowLoss;
+
+            // 8. 總風壓 = 風壓 + 管道長度損失 + 彎管損失 + 彎型管損失 + 濾布壓降
+            const totalWindPressure = windPressure_mmAq + ductLengthLoss + totalBendLoss + totalElbowLoss + filterLoss;
+
+            // 9. 確定過濾面積
+            // 過濾面積 = 風量 (CMM) / 過濾風速 (m/s)
+            const filterArea = airflow / filterVelocity;
+
+            // 10. 計算所需馬力
+            // HP = (總風壓 * 風量 (CMM)) / (6120 * 0.746 * 馬達效率)
+            const HP = (totalWindPressure * airflow) / (6120 * 0.746 * motorEfficiency);
+
+            // 格式化結果
+            const results = `
+                <div class="result-item"><strong>集塵室體積:</strong> ${volume.toFixed(2)} m³</div>
+                <div class="result-item"><strong>風量:</strong> ${airflow.toFixed(2)} CMM (m³/min)</div>
+                <div class="result-item"><strong>內徑:</strong> ${innerDiameter.toFixed(2)} mm</div>
+                <div class="result-item"><strong>管道截面積:</strong> ${ductArea.toFixed(4)} m²</div>
+                <div class="result-item"><strong>風速:</strong> ${windSpeed_mps.toFixed(2)} m/s</div>
+                <div class="result-item"><strong>風壓 (Pv):</strong> ${windPressure_mmAq.toFixed(2)} mmAq</div>
+                <div class="result-item"><strong>管道長度損失:</strong> ${ductLengthLoss.toFixed(2)} mmAq</div>
+                <div class="result-item"><strong>彎管損失:</strong> ${totalBendLoss.toFixed(2)} mmAq</div>
+                <div class="result-item"><strong>彎型管損失:</strong> ${totalElbowLoss.toFixed(2)} mmAq</div>
+                <div class="result-item"><strong>總風壓:</strong> ${totalWindPressure.toFixed(2)} mmAq</div>
+                <div class="result-item"><strong>過濾面積:</strong> ${filterArea.toFixed(2)} m²</div>
+                <div class="result-item"><strong>所需馬力:</strong> ${HP.toFixed(2)} hp</div>
             `;
+
+            document.getElementById('results').innerHTML = results;
         }
     </script>
+
 </body>
 </html>
