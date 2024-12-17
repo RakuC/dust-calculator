@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>計算PDF項目</title>
+    <title>集塵機 - 計算工具</title>
 </head>
 <body>
     <h1>氧化碴D倉集塵機 - 計算工具</h1>
@@ -20,30 +20,8 @@
         <label for="airChanges">每小時換氣次數:</label>
         <input type="number" id="airChanges" required><br>
 
-        <label for="filterSpeed">過濾風速 (m/min):</label>
-        <input type="number" id="filterSpeed" required><br>
-
-        <h3>壓損項目輸入</h3>
-        <label for="pipeLength">風管長度 (M):</label>
-        <input type="number" id="pipeLength" step="0.1" required><br>
-
-        <label for="pipeLossFactor">風管損失係數:</label>
-        <input type="number" id="pipeLossFactor" step="0.01" required><br>
-
-        <label for="bendCount">彎管數量:</label>
-        <input type="number" id="bendCount" required><br>
-
-        <label for="bendLossPerUnit">單彎管損失 (mmAq):</label>
-        <input type="number" id="bendLossPerUnit" step="0.1" required><br>
-
-        <label for="bendShapeCount">彎型管數量:</label>
-        <input type="number" id="bendShapeCount" required><br>
-
-        <label for="bendShapeLossPerUnit">單彎型管損失 (mmAq):</label>
-        <input type="number" id="bendShapeLossPerUnit" step="0.1" required><br>
-
-        <label for="filterLoss">濾布壓損 (mmAq):</label>
-        <input type="number" id="filterLoss" step="0.1" required><br>
+        <label for="pipeArea">管道截面積 (m<sup>2</sup>):</label>
+        <input type="number" id="pipeArea" step="0.01" required><br>
 
         <button type="button" onclick="calculateResults()">計算</button>
     </form>
@@ -58,42 +36,22 @@
             const width = parseFloat(document.getElementById('width').value);
             const height = parseFloat(document.getElementById('height').value);
             const airChanges = parseFloat(document.getElementById('airChanges').value);
-            const filterSpeed = parseFloat(document.getElementById('filterSpeed').value);
-
-            const pipeLength = parseFloat(document.getElementById('pipeLength').value);
-            const pipeLossFactor = parseFloat(document.getElementById('pipeLossFactor').value);
-            const bendCount = parseFloat(document.getElementById('bendCount').value);
-            const bendLossPerUnit = parseFloat(document.getElementById('bendLossPerUnit').value);
-            const bendShapeCount = parseFloat(document.getElementById('bendShapeCount').value);
-            const bendShapeLossPerUnit = parseFloat(document.getElementById('bendShapeLossPerUnit').value);
-            const filterLoss = parseFloat(document.getElementById('filterLoss').value);
+            const pipeArea = parseFloat(document.getElementById('pipeArea').value);
 
             // 計算立方體體積
             const volume = length * width * height; // 集塵立方
 
-            // 計算風量 (每小時換氣)
+            // 計算風量 (每小時換氣次數)
             const airVolume = (volume * airChanges) / 60; // CMM
 
-            // 管道風速計算
-            const pipeArea = 1.21; // 風管截面積計算固定為1.21
-            const windSpeed = (airVolume * 60) / pipeArea; // 風速 m/s
-
-            // 計算壓損
-            const pipeLoss = pipeLength * pipeLossFactor; // 風管損失
-            const bendLoss = bendCount * bendLossPerUnit; // 彎管損失
-            const bendShapeLoss = bendShapeCount * bendShapeLossPerUnit; // 彎型管損失
-            const totalLoss = pipeLoss + bendLoss + bendShapeLoss + filterLoss * 1.5;
-
-            // 馬力計算
-            const hp = (totalLoss * airVolume) / (6120 * 0.746 * 0.6);
+            // 計算管道風速
+            const windSpeed = airVolume / pipeArea; // 風速 m/s
 
             // 顯示結果
             document.getElementById('results').innerHTML = `
                 <p><strong>集塵立方體積:</strong> ${volume.toFixed(2)} m<sup>3</sup></p>
                 <p><strong>風量 (CMM):</strong> ${airVolume.toFixed(2)} CMM</p>
-                <p><strong>風速:</strong> ${windSpeed.toFixed(2)} m/s</p>
-                <p><strong>總壓損:</strong> ${totalLoss.toFixed(2)} mmAq</p>
-                <p><strong>馬力:</strong> ${hp.toFixed(2)} HP</p>
+                <p><strong>管道風速:</strong> ${windSpeed.toFixed(2)} m/s</p>
             `;
         }
     </script>
