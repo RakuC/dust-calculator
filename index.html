@@ -3,129 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>集塵機系統計算工具</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            margin: auto;
-        }
-        input, button {
-            margin: 8px 0;
-            padding: 8px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .result {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-        }
-    </style>
+    <title>計算PDF項目</title>
 </head>
 <body>
-    <div class="container">
-        <h2>集塵機系統計算工具</h2>
-        <!-- 使用者輸入區域 -->
-        <label>長 (m):</label>
-        <input type="number" id="length" placeholder="請輸入長度">
+    <h1>氧化碴D倉集塵機 - 計算工具</h1>
+    <form id="calcForm">
+        <label for="length">長 (M):</label>
+        <input type="number" id="length" required><br>
 
-        <label>寬 (m):</label>
-        <input type="number" id="width" placeholder="請輸入寬度">
+        <label for="width">寬 (M):</label>
+        <input type="number" id="width" required><br>
 
-        <label>高 (m):</label>
-        <input type="number" id="height" placeholder="請輸入高度">
+        <label for="height">高 (M):</label>
+        <input type="number" id="height" required><br>
 
-        <label>每小時換氣次數:</label>
-        <input type="number" id="airChanges" value="3" placeholder="預設為 3 次">
+        <label for="airChanges">每小時換氣次數:</label>
+        <input type="number" id="airChanges" required><br>
 
-        <label>風速 (m/s):</label>
-        <input type="number" id="windSpeed" value="10" placeholder="請輸入風速">
+        <label for="filterSpeed">過濾風速 (m/min):</label>
+        <input type="number" id="filterSpeed" required><br>
 
-        <label>直管長度 (m):</label>
-        <input type="number" id="pipeLength" value="18" placeholder="請輸入直管長度">
+        <h3>壓損項目輸入</h3>
+        <label for="pipeLength">風管長度 (M):</label>
+        <input type="number" id="pipeLength" step="0.1" required><br>
 
-        <label>90 度彎頭數量:</label>
-        <input type="number" id="bends" value="2" placeholder="請輸入彎頭數量">
+        <label for="pipeLossFactor">風管損失係數:</label>
+        <input type="number" id="pipeLossFactor" step="0.01" required><br>
 
-        <label>直管損失係數:</label>
-        <input type="number" id="pipeLossFactor" value="0.8" placeholder="請輸入直管損失係數">
+        <label for="bendCount">彎管數量:</label>
+        <input type="number" id="bendCount" required><br>
 
-        <label>每個彎頭損失係數:</label>
-        <input type="number" id="bendLossFactor" value="0.5" placeholder="請輸入彎頭損失係數">
+        <label for="bendLossPerUnit">單彎管損失 (mmAq):</label>
+        <input type="number" id="bendLossPerUnit" step="0.1" required><br>
 
-        <label>過濾速度 (m/min):</label>
-        <input type="number" id="filterSpeed" value="2" placeholder="請輸入過濾速度">
+        <label for="bendShapeCount">彎型管數量:</label>
+        <input type="number" id="bendShapeCount" required><br>
 
-        <!-- 計算按鈕 -->
-        <button onclick="calculate()">計算結果</button>
+        <label for="bendShapeLossPerUnit">單彎型管損失 (mmAq):</label>
+        <input type="number" id="bendShapeLossPerUnit" step="0.1" required><br>
 
-        <!-- 結果輸出區域 -->
-        <div class="result" id="result">
-            <h3>計算結果:</h3>
-            <p id="volume"></p>
-            <p id="airFlow"></p>
-            <p id="windPressure"></p>
-            <p id="filterArea"></p>
-        </div>
-    </div>
+        <label for="filterLoss">濾布壓損 (mmAq):</label>
+        <input type="number" id="filterLoss" step="0.1" required><br>
+
+        <button type="button" onclick="calculateResults()">計算</button>
+    </form>
+
+    <h2>計算結果:</h2>
+    <div id="results"></div>
 
     <script>
-        function calculate() {
-            // 取得輸入數值
-            const length = parseFloat(document.getElementById("length").value) || 0;
-            const width = parseFloat(document.getElementById("width").value) || 0;
-            const height = parseFloat(document.getElementById("height").value) || 0;
-            const airChanges = parseFloat(document.getElementById("airChanges").value) || 3;
-            const windSpeed = parseFloat(document.getElementById("windSpeed").value) || 10;
-            const pipeLength = parseFloat(document.getElementById("pipeLength").value) || 0;
-            const bends = parseInt(document.getElementById("bends").value) || 0;
-            const pipeLossFactor = parseFloat(document.getElementById("pipeLossFactor").value) || 0.8;
-            const bendLossFactor = parseFloat(document.getElementById("bendLossFactor").value) || 0.5;
-            const filterSpeed = parseFloat(document.getElementById("filterSpeed").value) || 2;
+        function calculateResults() {
+            // 輸入數據
+            const length = parseFloat(document.getElementById('length').value);
+            const width = parseFloat(document.getElementById('width').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const airChanges = parseFloat(document.getElementById('airChanges').value);
+            const filterSpeed = parseFloat(document.getElementById('filterSpeed').value);
 
-            // 常數
-            const airDensity = 1.2; // 空氣密度 (kg/m³)
-            const gravity = 9.8; // 重力加速度 (m/s²)
+            const pipeLength = parseFloat(document.getElementById('pipeLength').value);
+            const pipeLossFactor = parseFloat(document.getElementById('pipeLossFactor').value);
+            const bendCount = parseFloat(document.getElementById('bendCount').value);
+            const bendLossPerUnit = parseFloat(document.getElementById('bendLossPerUnit').value);
+            const bendShapeCount = parseFloat(document.getElementById('bendShapeCount').value);
+            const bendShapeLossPerUnit = parseFloat(document.getElementById('bendShapeLossPerUnit').value);
+            const filterLoss = parseFloat(document.getElementById('filterLoss').value);
 
-            // 1. 計算空間體積
-            const volume = length * width * height;
+            // 計算立方體體積
+            const volume = length * width * height; // 集塵立方
 
-            // 2. 計算每分鐘換氣風量
-            const airFlow = (volume * airChanges) / 60;
+            // 計算風量 (每小時換氣)
+            const airVolume = (volume * airChanges) / 60; // CMM
 
-            // 3. 風壓計算 Pv = (ρ * V^2) / 2g，考慮損失係數
-            const basicPressure = (airDensity * Math.pow(windSpeed, 2)) / (2 * gravity);
-            const totalLossFactor = 1 + (pipeLength * pipeLossFactor / 10) + (bends * bendLossFactor);
-            const totalPressure = basicPressure * totalLossFactor;
+            // 管道風速計算
+            const pipeArea = 1.21; // 風管截面積計算固定為1.21
+            const windSpeed = (airVolume * 60) / pipeArea; // 風速 m/s
 
-            // 4. 過濾面積計算
-            const filterArea = airFlow / filterSpeed;
+            // 計算壓損
+            const pipeLoss = pipeLength * pipeLossFactor; // 風管損失
+            const bendLoss = bendCount * bendLossPerUnit; // 彎管損失
+            const bendShapeLoss = bendShapeCount * bendShapeLossPerUnit; // 彎型管損失
+            const totalLoss = pipeLoss + bendLoss + bendShapeLoss + filterLoss * 1.5;
+
+            // 馬力計算
+            const hp = (totalLoss * airVolume) / (6120 * 0.746 * 0.6);
 
             // 顯示結果
-            document.getElementById("volume").innerHTML = `1. 空間體積: <b>${volume.toFixed(2)} m³</b>`;
-            document.getElementById("airFlow").innerHTML = `2. 每分鐘換氣風量: <b>${airFlow.toFixed(2)} CMM</b>`;
-            document.getElementById("windPressure").innerHTML = `3. 總風壓 (含損失): <b>${totalPressure.toFixed(2)} mmAq</b>`;
-            document.getElementById("filterArea").innerHTML = `4. 過濾面積: <b>${filterArea.toFixed(2)} m²</b>`;
+            document.getElementById('results').innerHTML = `
+                <p><strong>集塵立方體積:</strong> ${volume.toFixed(2)} m<sup>3</sup></p>
+                <p><strong>風量 (CMM):</strong> ${airVolume.toFixed(2)} CMM</p>
+                <p><strong>風速:</strong> ${windSpeed.toFixed(2)} m/s</p>
+                <p><strong>總壓損:</strong> ${totalLoss.toFixed(2)} mmAq</p>
+                <p><strong>馬力:</strong> ${hp.toFixed(2)} HP</p>
+            `;
         }
     </script>
 </body>
